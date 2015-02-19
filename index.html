@@ -1,0 +1,65 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src='javascript/jszip.js'></script>
+  <script src='javascript/jszip-utils.js'></script>
+  <script src='javascript/FileSaver.js'></script>
+  <script>
+    function showError(e) {
+      $("#status")
+      .removeClass()
+      .addClass("text-danger")
+      .text(e);
+    };
+
+    files = [
+      'http://asdf.com/89asdf.gif'
+    ]
+    
+    function getRemoteFile() {
+      JSZipUtils.getBinaryContent(files[0], function(err, data) {
+        if(err) {
+          showError(err);
+          return;
+        }
+
+        try {
+          var zip = new JSZip();
+          zip.file("image.png", data, {binary: true});
+          var content = zip.generate({type:"blob"});
+          saveAs(content, "test.zip");
+        } catch(e) {
+          showError(e);
+        }
+      });
+    }
+
+    function clickHandler() {
+      jQuery(function($) {
+        $("#demo").click(function () {
+            try {
+                getRemoteFile()
+                $("#status")
+                .removeClass()
+                .addClass("text-success")
+                .text("Done!");
+            }
+            catch (e) {
+              showError(e);
+            }
+        });
+      });
+    };
+
+    $(document).ready(function() {
+      clickHandler();
+    });
+  </script>
+</head>
+<body>
+
+<button id="demo">Download File</button>
+<span id="status"></span>
+
+</body>
+</html>
